@@ -1,0 +1,29 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+
+public class TestJava {
+    // 1. 语法错误：缺少分号、方法返回值不匹配
+    public static String getUser(int userId)
+        // 2. 安全漏洞：SQL注入
+        String sql = "SELECT * FROM users WHERE id = " + userId;
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/test", "root", "123456"); // 硬编码密码
+        Statement stmt = conn.createStatement();
+        stmt.execute(sql);
+        
+        // 3. 规范问题：不符合驼峰命名、魔法值
+        int MaxAge = 18; // 应改为maxAge
+        if (userId == 0) { // 魔法值0，应定义常量 USER_ID_DEFAULT = 0
+            return null;
+        }
+        
+        // 4. 逻辑错误：空指针风险
+        String userName = null;
+        if (userName.length() > 0) { // 未判空，会抛出NullPointerException
+            return userName;
+        }
+        
+        // 5. 资源泄漏：未关闭数据库连接/Statement
+        return "user";
+    }
+}
