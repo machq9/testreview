@@ -1,21 +1,22 @@
-# .coderabbit.yaml
+# .coderabbit.yaml 完整配置（项目根目录）
 reviews:
-  # 基础配置：审查范围+规则优先级
-  profile: assertive  # 严格模式
+  profile: assertive  # 严格审查模式
   paths:
-    include: ["src/**/*.py"]  # 仅审查src目录
-    exclude: ["tests/**/*.py"]  # 排除测试文件
-  # 自定义审查指令（核心：业务规则）
+    include: ["**/*.py"]
+    exclude: ["venv/**/*"]
   instructions:
-    - "所有处理用户敏感数据（手机号/身份证）的函数，必须加密后存储，禁止明文"
-    - "订单状态变更函数，必须记录操作日志（logging.info），包含操作人/时间/变更前后状态"
-    - "禁止使用全局变量存储业务数据（如订单列表），必须用类属性/数据库"
-    - "数据库连接必须使用with上下文管理器，禁止手动close（避免漏关）"
-  # 禁用不需要的默认规则
+    # 复用上述3条核心规则（CodeRabbit更适配自然语言指令）
+    - "所有SQL查询必须使用参数化查询，禁止字符串拼接，如：cursor.execute('SELECT * FROM orders WHERE id = ?', (order_id,))"
+    - "禁止使用print语句，必须替换为logging模块，示例：logging.info('订单创建成功：%s', order_id)"
+    - "订单金额（order_amount/amount）必须校验非空且>0，未校验时强制抛出ValueError，错误信息包含'订单金额必须为正数'"
+  # 禁用无关默认规则，避免干扰
   disable_default_rules:
-    - "line-length"  # 禁用行长度检查
-    - "variable-name-abbreviation"  # 禁用变量名缩写检查
-  # 自定义风险等级
+    - "line-length"
+    - "variable-name-abbreviation"
   severity:
-    - rule: "no-plaintext-sensitive-data"  # 自定义规则ID
-      level: "critical"  # 核心风险，PR必须修复
+    - rule: "sql-injection"
+      level: "critical"
+    - rule: "print-usage"
+      level: "critical"
+    - rule: "order-amount-validation"
+      level: "critical"
