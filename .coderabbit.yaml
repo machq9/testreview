@@ -2,9 +2,6 @@
 reviews:
   # 基础配置：审查范围+规则优先级
   profile: assertive  # 严格模式
-  paths:
-    include: ["src/**/*.py"]  # 仅审查src目录
-    exclude: ["tests/**/*.py"]  # 排除测试文件
   # 自定义审查指令（核心：业务规则）
   instructions:
     - "所有处理用户敏感数据（手机号/身份证）的函数，必须加密后存储，禁止明文"
